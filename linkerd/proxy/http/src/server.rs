@@ -54,10 +54,13 @@ impl<N> NewServeHttp<N> {
         if let Some(timeout) = h2.keepalive_timeout {
             // XXX(eliza): is this a reasonable interval between
             // PING frames?
-            let interval = timeout / 4;
             server
                 .http2_keep_alive_timeout(timeout)
-                .http2_keep_alive_interval(interval);
+                // set default interval
+                .http2_keep_alive_interval(timeout / 4);
+        }
+        if let Some(interval) = h2.keepalive_interval {
+            server.http2_keep_alive_interval(interval);
         }
 
         Self {
